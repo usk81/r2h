@@ -1,6 +1,7 @@
 package r2h
 
 import (
+	"fmt"
 	"math"
 	"regexp"
 	"strings"
@@ -38,7 +39,7 @@ func convertLetter(us string) (kana string, length int) {
 	return
 }
 
-func Convert(s string) (result string, isCompleted bool) {
+func convertWords(s string, strict bool) (result string, isCompleted bool, err error) {
 	isCompleted = true
 	for utf8.RuneCountInString(s) > 0 {
 		us := strings.ToUpper(s)
@@ -60,11 +61,26 @@ func Convert(s string) (result string, isCompleted bool) {
 				l = 1
 				if kana != " " {
 					isCompleted = false
+					if strict {
+						return "", false, fmt.Errorf("%s is not romaji", kana)
+					}
 				}
 			}
 		}
 		result += kana
 		s = substr(s, l)
 	}
+	return
+}
+
+// Convert romaji to hiragana
+func Convert(s string) (result string, isCompleted bool) {
+	result, isCompleted, _ = convertWords(s, false)
+	return
+}
+
+// ConvertStrict converts romaji to hiragana. If non-romaji letter are mixed, an error will occur.
+func ConvertStrict(s string) (result string, err error) {
+	result, _, err = convertWords(s, true)
 	return
 }

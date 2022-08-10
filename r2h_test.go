@@ -106,3 +106,109 @@ func TestConvert(t *testing.T) {
 		})
 	}
 }
+
+
+func TestConvertStrict(t *testing.T) {
+	type args struct {
+		s string
+	}
+	tests := []struct {
+		name            string
+		args            args
+		wantResult      string
+		wantErr bool
+	}{
+		{
+			name: "single_romaji_letter",
+			args: args{
+				s: "a",
+			},
+			wantResult:      "あ",
+			wantErr: false,
+		},
+		{
+			name: "single_non_romaji_letter",
+			args: args{
+				s: "x",
+			},
+			wantResult:      "",
+			wantErr: true,
+		},
+		{
+			name: "single_hiragana_letter",
+			args: args{
+				s: "あ",
+			},
+			wantResult:      "",
+			wantErr: true,
+		},
+		{
+			name: "all_vowel_letters",
+			args: args{
+				s: "aiueo",
+			},
+			wantResult:      "あいうえお",
+			wantErr: false,
+		},
+		{
+			name: "all_consonant_letters",
+			args: args{
+				s: "ksthmyrw",
+			},
+			wantResult:      "",
+			wantErr: true,
+		},
+		{
+			name: "uppercase_and_lowercase",
+			args: args{
+				s: "Aragaki Yui",
+			},
+			wantResult:      "あらがき ゆい",
+			wantErr: false,
+		},
+		{
+			name: "romaji_and_alpha",
+			args: args{
+				s: "Triendl Reina",
+			},
+			wantResult:      "",
+			wantErr: true,
+		},
+		{
+			name: "short_sentence",
+			args: args{
+				s: "awayachiisanagomikarahamassugunakagenobouga,nanamenimizunonakaninarandetachimashita.",
+			},
+			wantResult:      "あわやちいさなごみからはまっすぐなかげのぼうが、ななめにみずのなかにならんでたちました。",
+			wantErr: false,
+		},
+		{
+			name: "double_vowel",
+			args: args{
+				s: "yuuki",
+			},
+			wantResult:      "ゆうき",
+			wantErr: false,
+		},
+		{
+			name: "double_consonant",
+			args: args{
+				s: "gakki",
+			},
+			wantResult:      "がっき",
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotResult, err := ConvertStrict(tt.args.s)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ConvertStrict() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if gotResult != tt.wantResult {
+				t.Errorf("ConvertStrict() gotResult = %v, want %v", gotResult, tt.wantResult)
+			}
+		})
+	}
+}
