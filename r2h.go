@@ -5,12 +5,19 @@ import (
 	"math"
 	"regexp"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 )
 
-const alphaRegexString = "^[a-zA-Z]+$"
+const (
+	alphaRegexString  = "^[a-zA-Z]+$"
+	numberRegexString = "^[0-9０-９]+$"
+)
 
-var alphaRegex = regexp.MustCompile(alphaRegexString)
+var (
+	alphaRegex  = regexp.MustCompile(alphaRegexString)
+	numberRegex = regexp.MustCompile(numberRegexString)
+)
 
 func substr(s string, start int, end ...int) string {
 	if len(end) > 0 {
@@ -25,6 +32,23 @@ func charAt(s string, index int) string {
 
 func isAlpha(s string) bool {
 	return alphaRegex.MatchString(s)
+}
+
+func isNumber(s string) bool {
+	return numberRegex.MatchString(s)
+}
+
+func isHiragana(s string) bool {
+	for _, r := range s {
+		if b := isHiraganaRune(r); !b {
+			return false
+		}
+	}
+	return true
+}
+
+func isHiraganaRune(r rune) bool {
+	return unicode.In(r, unicode.Hiragana)
 }
 
 func convertLetter(us string) (kana string, length int) {
@@ -59,7 +83,7 @@ func convertWords(s string, strict bool) (result string, isCompleted bool, err e
 			if kana == "" {
 				kana = charAt(s, 0)
 				l = 1
-				if kana != " " {
+				if kana != " " && !isNumber(kana) && !isHiragana(kana) {
 					isCompleted = false
 					if strict {
 						return "", false, fmt.Errorf("%s is not romaji", kana)

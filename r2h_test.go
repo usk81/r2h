@@ -34,7 +34,7 @@ func TestConvert(t *testing.T) {
 				s: "あ",
 			},
 			wantResult:      "あ",
-			wantIsCompleted: false,
+			wantIsCompleted: true,
 		},
 		{
 			name: "all_vowel_letters",
@@ -93,9 +93,27 @@ func TestConvert(t *testing.T) {
 			wantResult:      "がっき",
 			wantIsCompleted: true,
 		},
+		{
+			name: "romaji_and_number",
+			args: args{
+				s: "1choume",
+			},
+			wantResult:      "1ちょうめ",
+			wantIsCompleted: true,
+		},
+		{
+			name: "romaji_and_multibyte_number",
+			args: args{
+				s: "１banchi",
+			},
+			wantResult:      "１ばんち",
+			wantIsCompleted: true,
+		},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			gotResult, gotIsCompleted := Convert(tt.args.s)
 			if gotResult != tt.wantResult {
 				t.Errorf("Convert() gotResult = %v, want %v", gotResult, tt.wantResult)
@@ -107,100 +125,117 @@ func TestConvert(t *testing.T) {
 	}
 }
 
-
 func TestConvertStrict(t *testing.T) {
 	type args struct {
 		s string
 	}
 	tests := []struct {
-		name            string
-		args            args
-		wantResult      string
-		wantErr bool
+		name       string
+		args       args
+		wantResult string
+		wantErr    bool
 	}{
 		{
 			name: "single_romaji_letter",
 			args: args{
 				s: "a",
 			},
-			wantResult:      "あ",
-			wantErr: false,
+			wantResult: "あ",
+			wantErr:    false,
 		},
 		{
 			name: "single_non_romaji_letter",
 			args: args{
 				s: "x",
 			},
-			wantResult:      "",
-			wantErr: true,
+			wantResult: "",
+			wantErr:    true,
 		},
 		{
 			name: "single_hiragana_letter",
 			args: args{
 				s: "あ",
 			},
-			wantResult:      "",
-			wantErr: true,
+			wantResult: "あ",
+			wantErr:    false,
 		},
 		{
 			name: "all_vowel_letters",
 			args: args{
 				s: "aiueo",
 			},
-			wantResult:      "あいうえお",
-			wantErr: false,
+			wantResult: "あいうえお",
+			wantErr:    false,
 		},
 		{
 			name: "all_consonant_letters",
 			args: args{
 				s: "ksthmyrw",
 			},
-			wantResult:      "",
-			wantErr: true,
+			wantResult: "",
+			wantErr:    true,
 		},
 		{
 			name: "uppercase_and_lowercase",
 			args: args{
 				s: "Aragaki Yui",
 			},
-			wantResult:      "あらがき ゆい",
-			wantErr: false,
+			wantResult: "あらがき ゆい",
+			wantErr:    false,
 		},
 		{
 			name: "romaji_and_alpha",
 			args: args{
 				s: "Triendl Reina",
 			},
-			wantResult:      "",
-			wantErr: true,
+			wantResult: "",
+			wantErr:    true,
 		},
 		{
 			name: "short_sentence",
 			args: args{
 				s: "awayachiisanagomikarahamassugunakagenobouga,nanamenimizunonakaninarandetachimashita.",
 			},
-			wantResult:      "あわやちいさなごみからはまっすぐなかげのぼうが、ななめにみずのなかにならんでたちました。",
-			wantErr: false,
+			wantResult: "あわやちいさなごみからはまっすぐなかげのぼうが、ななめにみずのなかにならんでたちました。",
+			wantErr:    false,
 		},
 		{
 			name: "double_vowel",
 			args: args{
 				s: "yuuki",
 			},
-			wantResult:      "ゆうき",
-			wantErr: false,
+			wantResult: "ゆうき",
+			wantErr:    false,
 		},
 		{
 			name: "double_consonant",
 			args: args{
 				s: "gakki",
 			},
-			wantResult:      "がっき",
-			wantErr: false,
+			wantResult: "がっき",
+			wantErr:    false,
+		},
+		{
+			name: "romaji_and_number",
+			args: args{
+				s: "1choume",
+			},
+			wantResult: "1ちょうめ",
+			wantErr:    false,
+		},
+		{
+			name: "romaji_and_multibyte_number",
+			args: args{
+				s: "１banchi",
+			},
+			wantResult: "１ばんち",
+			wantErr:    false,
 		},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			gotResult, err := ConvertStrict(tt.args.s)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ConvertStrict() error = %v, wantErr %v", err, tt.wantErr)
