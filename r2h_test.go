@@ -109,6 +109,22 @@ func TestConvert(t *testing.T) {
 			wantResult:      "１ばんち",
 			wantIsCompleted: true,
 		},
+		{
+			name: "issue #1 pattern 1",
+			args: args{
+				s: "nennenkororinn",
+			},
+			wantResult:      "ねんねんころりん",
+			wantIsCompleted: true,
+		},
+		{
+			name: "issue #1 pattern 2",
+			args: args{
+				s: "mennma",
+			},
+			wantResult:      "めんま",
+			wantIsCompleted: true,
+		},
 	}
 	for _, tt := range tests {
 		tt := tt
@@ -229,6 +245,22 @@ func TestConvertStrict(t *testing.T) {
 				s: "１banchi",
 			},
 			wantResult: "１ばんち",
+			wantErr:    false,
+		},
+		{
+			name: "issue #1 pattern 1",
+			args: args{
+				s: "nennenkororinn",
+			},
+			wantResult: "ねんねんころりん",
+			wantErr:    false,
+		},
+		{
+			name: "issue #1 pattern 2",
+			args: args{
+				s: "mennma",
+			},
+			wantResult: "めんま",
 			wantErr:    false,
 		},
 	}
