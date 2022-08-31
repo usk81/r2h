@@ -47,6 +47,13 @@ func isHiragana(s string) bool {
 	return true
 }
 
+func isVowel(s string) bool {
+	if s == "A" || s == "I" || s == "U" || s == "E" || s == "O" {
+		return true
+	}
+	return false
+}
+
 func isHiraganaRune(r rune) bool {
 	return unicode.In(r, unicode.Hiragana)
 }
@@ -68,7 +75,19 @@ func convertWords(s string, strict bool) (result string, isCompleted bool, err e
 	for utf8.RuneCountInString(s) > 0 {
 		us := strings.ToUpper(s)
 		kana, l := convertLetter(us)
-		if kana == "" {
+		if kana == "ん" && strings.HasPrefix(us, "NN") {
+			// issue #1
+			if utf8.RuneCountInString(us) >= 3 {
+				third := charAt(us, 2)
+				if isVowel(third) {
+					l = 1
+				} else {
+					l = 2
+				}
+			} else {
+				l = 2
+			}
+		} else if kana == "" {
 			if utf8.RuneCountInString(us) >= 3 {
 				head := charAt(us, 0)
 				next := charAt(us, 1)

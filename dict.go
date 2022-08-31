@@ -65,7 +65,6 @@ var dict = map[string]string{
 	"NU":  "ぬ",
 	"NE":  "ね",
 	"NO":  "の",
-	"NN":  "ん",
 	"PA":  "ぱ",
 	"PI":  "ぴ",
 	"PU":  "ぷ",
